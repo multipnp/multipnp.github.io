@@ -90,6 +90,16 @@
   </div>
 </section>
 
+<section class="section">
+  <div class="container is-max-desktop">
+    <figure class="paper-figure">
+      <img src="./static/images/robot-setup.png" alt="Simulation and real-world four-arm pick-and-place cell">
+      <figcaption>Simulation (a) mirrors the real 4-arm cell (b) &mdash; the same policy runs on
+        both, unchanged.</figcaption>
+    </figure>
+  </div>
+</section>
+
 <!--
 <section class="hero teaser">
   <div class="container is-max-desktop">
@@ -106,17 +116,6 @@
 </section>
 -->
 
-
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video id="rl-training" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/rl_training.mp4"
-                type="video/mp4">
-      </video>
-    </div>
-  </div>
-</section>
 
 
 <section class="section">
@@ -145,13 +144,14 @@
             accuracy.
           </p>
           <p>
-            Experiments show that our method achieves <span class="placeholder">[XX%]</span> success
-            rate and reduces task execution time by <span class="placeholder">[XX%]</span> compared
-            with <span class="placeholder">[baseline]</span> in simulation. The proposed method also
-            successfully coordinates <span class="placeholder">[N]</span> robots to manipulate
-            <span class="placeholder">[M]</span> objects in a real-world, perception-based setting,
-            achieving <span class="placeholder">[XX%]</span> success rate over
-            <span class="placeholder">[K]</span> trials.
+            The policy is coupled to a classical inverse-kinematics solver through a <i>docking</i>
+            interface: it commands a standoff pose, and a pick is admitted only when the final descent
+            from that pose is feasible, so that simulated success remains executable on hardware.
+            Experiments show that our method achieves a 92.5% success rate with four robots and eight
+            objects in simulation, completing tasks 3.5&times; faster than a serial planning baseline
+            given three times the time budget. The proposed method also transfers zero-shot to other
+            team sizes and object counts and, deployed on a physical cell of 4 robots, clears 92% of 50
+            real-world scenes and places 97.9% of 480 objects with no executed collisions.
           </p>
         </div>
       </div>
@@ -175,56 +175,48 @@
             <b>scheduling</b> (when each pick and place sub-task should run given the sequential
             dependency between stages), and <b>motion planning</b> (how robots move without colliding
             in a shared workspace). Prior work typically handles these separately with hand-designed
-            heuristics; we instead learn all three jointly with a single reinforcement learning policy.
+            heuristics; we instead learn all three jointly with a single reinforcement learning policy,
+            built on two key ideas.
+          </p>
+        </div>
+
+        <!-- Insight 1: GNN scene representation. -->
+        <h3 class="title is-4">1. A Graph Scene Representation for Multi-Robot Coordination</h3>
+        <div class="content has-text-justified">
+          <p>
+            We represent the whole scene &mdash; every robot, object, bin, and obstacle &mdash; as a
+            single graph, and a Graph Neural Network propagates information across it. This lets one
+            centralized policy reason jointly about which robot should approach which object, when,
+            and how to move without colliding with the others, instead of relying on a hand-designed
+            allocation and scheduling rule. Because the representation is not tied to a fixed number of
+            nodes, the same policy generalizes zero-shot to different team sizes and object counts.
+          </p>
+        </div>
+        <figure class="paper-figure">
+          <img src="./static/images/scene-graph.png" alt="Scene graph over robots, objects, bins, and obstacles">
+          <figcaption>Every robot, object, and bin is a node in one shared graph &mdash; the GNN reads
+            it to decide who does what, and when.</figcaption>
+        </figure>
+        <!--/ Insight 1. -->
+
+        <!-- Insight 2: coarse policy + fine-grained IK docking. -->
+        <h3 class="title is-4">2. Coarse Policy, Fine-Grained Execution</h3>
+        <div class="content has-text-justified">
+          <p>
+            The learned policy only needs to get a robot close: it commands a coarse <i>standoff</i>
+            pose above an object rather than the exact grasp itself. A classical inverse-kinematics
+            solver then takes over for the last few centimeters, and a pick is only accepted once a
+            collision-free descent from that standoff to the grasp is actually feasible. This
+            coarse-to-fine handoff keeps the policy free to focus on high-level coordination while
+            guaranteeing that every "successful" pick in simulation is one a real arm can actually
+            execute, closing the gap between simulated and real-world performance.
           </p>
         </div>
         <div class="placeholder-figure">
-          [Figure placeholder: Method overview — Graph Neural Network policy over robots, objects,
-          targets, and obstacles, producing joint task allocation, scheduling, and motion actions]
+          [Figure placeholder: docking hand-off &mdash; policy commands a standoff pose, IK solver
+          performs the final descent and grasp]
         </div>
-
-        <!-- GNN Policy. -->
-        <h3 class="title is-4">Graph Neural Network Policy</h3>
-        <div class="content has-text-justified">
-          <p>
-            We represent the scene as a graph with nodes for robots, objects, targets, and obstacles.
-            A Graph Neural Network propagates relational information over this graph so the policy can
-            reason about which robot should act on which object and how to avoid other robots and
-            obstacles, allowing the approach to generalize across different numbers of robots and
-            objects.
-          </p>
-        </div>
-        <!--/ GNN Policy. -->
-
-        <!-- Two-Stage HER. -->
-        <h3 class="title is-4">Two-Stage Hindsight Experience Replay</h3>
-        <div class="content has-text-justified">
-          <p>
-            Because a place sub-task can only succeed after its corresponding pick sub-task has
-            completed, reward signal is sparse and exploration is difficult with standard RL training.
-            We address this with a two-stage hindsight experience replay strategy that relabels
-            intermediate task states as achieved goals for both the picking and placing stages
-            separately, allowing the policy to learn useful behavior from partially completed episodes
-            rather than only from full task successes.
-          </p>
-        </div>
-        <div class="placeholder-figure">
-          [Figure placeholder: Two-stage hindsight experience replay — goal relabeling across pick and
-          place stages]
-        </div>
-        <!--/ Two-Stage HER. -->
-
-        <!-- IK Controller. -->
-        <h3 class="title is-4">Execution with Inverse Kinematics</h3>
-        <div class="content has-text-justified">
-          <p>
-            The learned policy outputs high-level pick, place, and motion decisions, which are then
-            executed by a conventional inverse kinematics controller. Combining a learned policy with
-            a classical low-level controller improves execution accuracy compared to relying on
-            learned motion alone.
-          </p>
-        </div>
-        <!--/ IK Controller. -->
+        <!--/ Insight 2. -->
       </div>
     </div>
     <!--/ Method. -->
@@ -233,18 +225,190 @@
     <div class="columns is-centered">
       <div class="column is-full-width">
         <h2 class="title is-3">Simulation Results</h2>
+
+        <!-- Baseline comparison. -->
+        <h3 class="title is-4">Comparison to Baselines</h3>
         <div class="content has-text-justified">
           <p>
-            We evaluate our method in simulation against <span class="placeholder">[baseline]</span>
-            across increasing numbers of robots and objects. Our method achieves a
-            <span class="placeholder">[XX%]</span> success rate and reduces task execution time by
-            <span class="placeholder">[XX%]</span> relative to the baseline.
+            A single MultiPnP policy solves the full task 3.5&times; faster than a hand-designed
+            planning baseline, even when that baseline is given three times as much time to plan
+            and act. The policy also transfers zero-shot to team sizes and object counts it never
+            saw during training.
           </p>
         </div>
-        <div class="placeholder-figure">
-          [Figure/table placeholder: Success rate and execution time vs. baseline across
-          robot/object counts]
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/comparisons_to_baselines/main_4r8t_ep0.mp4" type="video/mp4">
+              </video>
+              <figcaption>MultiPnP (ours)</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/comparisons_to_baselines/baseline_serial_ep1.mp4" type="video/mp4">
+              </video>
+              <figcaption>SinglePnP + planner, serial</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/comparisons_to_baselines/baseline_parallel_ep1.mp4" type="video/mp4">
+              </video>
+              <figcaption>SinglePnP + planner, parallel</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/comparisons_to_baselines/reach_switch_ep1.mp4" type="video/mp4">
+              </video>
+              <figcaption>Reaching policy + switching</figcaption>
+            </figure>
+          </div>
         </div>
+        <!--/ Baseline comparison. -->
+
+        <!-- Ablation study. -->
+        <h3 class="title is-4">Ablation Study</h3>
+        <div class="content has-text-justified">
+          <p>
+            The coarse-to-fine docking scheme is what makes simulated success transfer to real
+            execution: without it, the success rate roughly halves. Removing the two-stage training
+            strategy, or the place-phase carry signal, is even more severe &mdash; the policy fails
+            to complete the task at all.
+          </p>
+        </div>
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <div class="placeholder-figure">
+              [Video placeholder: w/o docking mechanism]
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="placeholder-figure">
+              [Video placeholder: w/o two-stage HER]
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="placeholder-figure">
+              [Video placeholder: w/o place-phase carry signal]
+            </div>
+          </div>
+        </div>
+        <!--/ Ablation study. -->
+
+        <!-- Flexibility. -->
+        <h3 class="title is-4">Flexibility</h3>
+
+        <div class="content has-text-justified">
+          <p>
+            Our pipeline is applicable to randomized scenes with varying object and bin
+            configurations, including their positions and orientations.
+          </p>
+        </div>
+        <div class="columns is-multiline">
+          <div class="column is-one-third">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/main_4r8t_ep0.mp4" type="video/mp4">
+              </video>
+              <figcaption>Scene 1</figcaption>
+            </figure>
+          </div>
+          <div class="column is-one-third">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/main_4r8t_ep1.mp4" type="video/mp4">
+              </video>
+              <figcaption>Scene 2</figcaption>
+            </figure>
+          </div>
+          <div class="column is-one-third">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/main_4r8t_ep2.mp4" type="video/mp4">
+              </video>
+              <figcaption>Scene 3</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="content has-text-justified">
+          <p>
+            Our pipeline is applicable to a variable number of robots, without retraining.
+          </p>
+        </div>
+        <div class="columns is-multiline">
+          <div class="column is-one-third">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/arms_2r_ep3.mp4" type="video/mp4">
+              </video>
+              <figcaption>2 robots</figcaption>
+            </figure>
+          </div>
+          <div class="column is-one-third">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/arms_3r_ep3.mp4" type="video/mp4">
+              </video>
+              <figcaption>3 robots</figcaption>
+            </figure>
+          </div>
+          <div class="column is-one-third">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/main_4r8t_ep0.mp4" type="video/mp4">
+              </video>
+              <figcaption>4 robots</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="content has-text-justified">
+          <p>
+            Our pipeline is applicable to a variable number of objects, without retraining.
+          </p>
+        </div>
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/scale_12t_ep1.mp4" type="video/mp4">
+              </video>
+              <figcaption>12 objects</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/scale_16t_ep0.mp4" type="video/mp4">
+              </video>
+              <figcaption>16 objects</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/scale_24t_ep0.mp4" type="video/mp4">
+              </video>
+              <figcaption>24 objects</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/scale_32t_ep1.mp4" type="video/mp4">
+              </video>
+              <figcaption>32 objects</figcaption>
+            </figure>
+          </div>
+        </div>
+        <!--/ Flexibility. -->
       </div>
     </div>
     <!--/ Simulation Results. -->
@@ -255,16 +419,52 @@
         <h2 class="title is-3">Real-World Experiments</h2>
         <div class="content has-text-justified">
           <p>
-            We deploy the learned policy on a real, perception-based multi-robot setup, coordinating
-            <span class="placeholder">[N]</span> robots to manipulate
-            <span class="placeholder">[M]</span> objects. The system achieves a
-            <span class="placeholder">[XX%]</span> success rate over
-            <span class="placeholder">[K]</span> trials, demonstrating that the policy transfers from
-            simulation to real hardware with perception in the loop.
+            The same policy, deployed unchanged on a physical cell of 4 robot arms, clears 92% of 50
+            randomized real-world scenes and places 97.9% of 480 objects &mdash; with zero executed
+            collisions. This confirms that coordination learned entirely in simulation transfers
+            directly to hardware.
           </p>
         </div>
-        <div class="placeholder-figure">
-          [Video/figure placeholder: Real-world multi-robot pick-and-place rollout]
+        <div class="content has-text-centered">
+          <p>
+            Our policy achieves complete multi-robot, multi-object pick-and-place execution. (a) shows
+            the resulting behavior in MuJoCo simulation; (b) shows the same policy deployed, unchanged,
+            on the real-world robot cell.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="placeholder-figure">
+              [Video placeholder: (a) simulation rollout]
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="placeholder-figure">
+              [Video placeholder: (b) real-world rollout]
+            </div>
+          </div>
+        </div>
+        <div class="content has-text-centered">
+          <p>
+            We validate this behavior robustly, running the policy across many repeated trials.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-one-third">
+            <div class="placeholder-figure">
+              [Video placeholder: trial 1]
+            </div>
+          </div>
+          <div class="column is-one-third">
+            <div class="placeholder-figure">
+              [Video placeholder: trial 2]
+            </div>
+          </div>
+          <div class="column is-one-third">
+            <div class="placeholder-figure">
+              [Video placeholder: trial 3]
+            </div>
+          </div>
         </div>
       </div>
     </div>

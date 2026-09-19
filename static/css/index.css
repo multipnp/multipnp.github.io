@@ -39,10 +39,38 @@ body {
   font-style: italic;
 }
 
+.paper-figure {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.paper-figure img,
+.paper-figure video {
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  max-width: 100%;
+}
+
+.paper-figure figcaption {
+  color: #666;
+  font-style: italic;
+  font-size: 0.95rem;
+  margin-top: 0.75rem;
+}
+
 
 .teaser .hero-body {
   padding-top: 0;
   padding-bottom: 3rem;
+  flex-direction: column;
+}
+
+.teaser .hero-body video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
 .teaser {
