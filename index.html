@@ -250,7 +250,7 @@
               <video autoplay muted loop playsinline>
                 <source src="./static/videos/comparisons_to_baselines/baseline_serial_ep1.mp4" type="video/mp4">
               </video>
-              <figcaption>SinglePnP + planner, serial</figcaption>
+              <figcaption>SinglePnP + a naive serial planner that commands each robot to pick and place sequentially. This baseline achieves a high success rate but is 3.5&times; slower than ours.</figcaption>
             </figure>
           </div>
           <div class="column is-half">
@@ -258,7 +258,7 @@
               <video autoplay muted loop playsinline>
                 <source src="./static/videos/comparisons_to_baselines/baseline_parallel_ep1.mp4" type="video/mp4">
               </video>
-              <figcaption>SinglePnP + planner, parallel</figcaption>
+              <figcaption>SinglePnP + a parallel planner that commands all robots to pick and place simultaneously. This approach reduces execution time compared to the serial counterpart, but at the expense of a lower success rate and more blocked motions &mdash; motion commands from the planner that would cause a collision if executed, and are rejected instead.</figcaption>
             </figure>
           </div>
           <div class="column is-half">
@@ -284,18 +284,24 @@
         </div>
         <div class="columns is-multiline">
           <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/ablation_study/abl_noprior_ep1.mp4" type="video/mp4">
+              </video>
+              <figcaption>w/o two-stage HER</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/ablation_study/abl_carrysignal_ep1.mp4" type="video/mp4">
+              </video>
+              <figcaption>w/o place-phase carry signal</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
             <div class="placeholder-figure">
               [Video placeholder: w/o docking mechanism]
-            </div>
-          </div>
-          <div class="column is-half">
-            <div class="placeholder-figure">
-              [Video placeholder: w/o two-stage HER]
-            </div>
-          </div>
-          <div class="column is-half">
-            <div class="placeholder-figure">
-              [Video placeholder: w/o place-phase carry signal]
             </div>
           </div>
         </div>
