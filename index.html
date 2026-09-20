@@ -92,6 +92,9 @@
 
 <section class="section">
   <div class="container is-max-desktop">
+    <div class="placeholder-figure">
+      [Video placeholder: a real-world demo that is impressive enough to catch people's attention]
+    </div>
     <figure class="paper-figure">
       <img src="./static/images/robot-setup.png" alt="Simulation and real-world four-arm pick-and-place cell">
       <figcaption>Simulation (a) mirrors the real 4-arm cell (b) &mdash; the same policy runs on
@@ -230,10 +233,12 @@
         <h3 class="title is-4">Comparison to Baselines</h3>
         <div class="content has-text-justified">
           <p>
-            A single MultiPnP policy solves the full task 3.5&times; faster than a hand-designed
-            planning baseline, even when that baseline is given three times as much time to plan
-            and act. The policy also transfers zero-shot to team sizes and object counts it never
-            saw during training.
+            We compare MultiPnP against two hand-designed planners (serial and parallel) and a
+            reaching policy, i.e. the pick-only policy we train first as a prior for MultiPnP, run on
+            the full task by switching its target to the bin after each pick. MultiPnP finishes a scene in 15 s on average,
+            3.5&times; faster than the serial planner (53 s), which only succeeds when allowed a
+            3&times; longer time limit. The parallel planner is faster than the serial one but
+            fails more often, and the reaching policy completes no scene.
           </p>
         </div>
         <div class="columns is-multiline">
@@ -258,7 +263,7 @@
               <video autoplay muted loop playsinline>
                 <source src="./static/videos/comparisons_to_baselines/baseline_parallel_ep1.mp4" type="video/mp4">
               </video>
-              <figcaption>SinglePnP + a parallel planner that commands all robots to pick and place simultaneously. This approach reduces execution time compared to the serial counterpart, but at the expense of a lower success rate and more blocked motions &mdash; motion commands from the planner that would cause a collision if executed, and are rejected instead.</figcaption>
+              <figcaption>SinglePnP + a naive parallel planner that commands all robots to pick and place simultaneously. This approach reduces execution time compared to the serial counterpart, but at the expense of a lower success rate and more blocked motions &mdash; motion commands from the planner that would cause a collision if executed, and are rejected instead.</figcaption>
             </figure>
           </div>
           <div class="column is-half">
@@ -266,7 +271,7 @@
               <video autoplay muted loop playsinline>
                 <source src="./static/videos/comparisons_to_baselines/reach_switch_ep1.mp4" type="video/mp4">
               </video>
-              <figcaption>Reaching policy + switching</figcaption>
+              <figcaption>Reaching policy (the pick-only policy we train first as a prior for MultiPnP) with its target switched to the bin after each pick, and no place-phase training. The arms grasp objects but were never trained to carry them, so they hold on to objects without delivering and no scene is completed.</figcaption>
             </figure>
           </div>
         </div>
@@ -411,6 +416,32 @@
                 <source src="./static/videos/flexibility/scale_32t_ep1.mp4" type="video/mp4">
               </video>
               <figcaption>32 objects</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="content has-text-justified">
+          <p>
+            Our pipeline extends to sorting objects of different types into their matching bins.
+            Sorting changes the goal rather than the scene graph, so zero-shot transfer does not
+            cover it; a brief fine-tuning of the same policy is sufficient.
+          </p>
+        </div>
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/sorting_ep0.mp4" type="video/mp4">
+              </video>
+              <figcaption>Sorting, scene 1</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/flexibility/sorting_ep2.mp4" type="video/mp4">
+              </video>
+              <figcaption>Sorting, scene 2</figcaption>
             </figure>
           </div>
         </div>
