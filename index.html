@@ -183,6 +183,23 @@
           </p>
         </div>
 
+        <!-- Method overview. -->
+        <figure class="paper-figure">
+          <img src="./static/images/multipnp_overall.jpg" alt="Overview of the MultiPnP pipeline">
+          <figcaption>Overview of MultiPnP: the scene is encoded as a graph over robots, objects, and
+            bins, a GNN policy jointly allocates, schedules, and coarsely positions each robot, and a
+            classical IK solver executes the final collision-free grasp or placement.</figcaption>
+        </figure>
+        <div class="content has-text-justified">
+          <p>
+            The figure above summarizes the full pipeline end to end. The two subsections below detail
+            each half of it: first the graph scene representation that the GNN policy reasons over, then
+            the coarse-to-fine handoff between the learned policy and the classical IK solver that
+            executes it on hardware.
+          </p>
+        </div>
+        <!--/ Method overview. -->
+
         <!-- Insight 1: GNN scene representation. -->
         <h3 class="title is-4">1. A Graph Scene Representation for Multi-Robot Coordination</h3>
         <div class="content has-text-justified">
