@@ -69,6 +69,17 @@ body {
   max-height: 70vh;
 }
 
+/* The scene-graph diagram stays legible well below full column width. */
+.paper-figure--60 img {
+  width: 60%;
+}
+
+@media screen and (max-width: 768px) {
+  .paper-figure--60 img {
+    width: 100%;
+  }
+}
+
 .paper-figure figcaption {
   color: #666;
   font-style: italic;
