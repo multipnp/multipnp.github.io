@@ -69,13 +69,20 @@ body {
   max-height: 70vh;
 }
 
-/* The scene-graph diagram stays legible well below full column width. */
+/* Figures that read fine below full column width. The percentage is chosen per
+   figure: the scene graph is large node boxes, the docking hand-off has finer
+   annotations and needs more room. */
 .paper-figure--60 img {
   width: 60%;
 }
 
+.paper-figure--80 img {
+  width: 80%;
+}
+
 @media screen and (max-width: 768px) {
-  .paper-figure--60 img {
+  .paper-figure--60 img,
+  .paper-figure--80 img {
     width: 100%;
   }
 }
