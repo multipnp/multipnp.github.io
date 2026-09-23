@@ -51,6 +51,24 @@ body {
   max-width: 100%;
 }
 
+/* 16:9 source footage is shown 4:3 so the tiles are taller. The crop is
+   anchored left because the burned-in title chip and the docking-marker
+   legend both sit against the left edge; a centred crop clips them. */
+.paper-figure video {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: left center;
+}
+
+/* Portrait real-world clips (1080x1920) must not be cropped to 4:3. */
+.paper-figure--tall video {
+  aspect-ratio: auto;
+  object-fit: contain;
+  width: auto;
+  max-height: 70vh;
+}
+
 .paper-figure figcaption {
   color: #666;
   font-style: italic;
