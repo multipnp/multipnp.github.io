@@ -28,7 +28,6 @@
   <link rel="stylesheet" href="./static/css/bulma.min.css">
   <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
   <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
@@ -111,7 +110,7 @@
   <div class="container is-max-desktop">
     <div class="hero-body">
       <video id="teaser" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/sim2real.mp4"
+        <source src="./static/videos/sim2real_new.mp4"
                 type="video/mp4">
       </video>
       <h2 class="subtitle has-text-centered">
@@ -215,7 +214,7 @@
             nodes, the same policy generalizes zero-shot to different team sizes and object counts.
           </p>
         </div>
-        <figure class="paper-figure">
+        <figure class="paper-figure paper-figure--60">
           <img src="./static/images/scene-graph.png" alt="Scene graph over robots, objects, bins, and obstacles">
           <figcaption>Every robot, object, and bin is a node in one shared graph &mdash; the GNN reads
             it to decide who does what, and when.</figcaption>
@@ -235,10 +234,13 @@
             execute, closing the gap between simulated and real-world performance.
           </p>
         </div>
-        <div class="placeholder-figure">
-          [Figure placeholder: docking hand-off &mdash; policy commands a standoff pose, IK solver
-          performs the final descent and grasp]
-        </div>
+        <figure class="paper-figure paper-figure--80">
+          <img src="./static/images/grasping-detail.jpg" alt="Coarse-to-fine docking hand-off: the policy commands a standoff pose, an IK solver executes the descent, and the pick is accepted only if every descent waypoint is collision-free">
+          <figcaption>The policy only commands the coarse <i>standoff</i> pose; a classical IK solver
+            runs the final descent to the grasp. The pick registers only if every waypoint of that
+            descent has a collision-free arm pose &mdash; otherwise the approach is refused and the
+            object stays available to try again.</figcaption>
+        </figure>
         <!--/ Insight 2. -->
       </div>
     </div>
@@ -265,7 +267,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/comparisons_to_baselines/main_4r8t_ep0.mp4" type="video/mp4">
+                <source src="./static/videos/comparisons_to_baselines/main_4r8t_ep1_new.mp4" type="video/mp4">
               </video>
               <figcaption>MultiPnP (ours)</figcaption>
             </figure>
@@ -273,7 +275,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/comparisons_to_baselines/baseline_serial_ep1.mp4" type="video/mp4">
+                <source src="./static/videos/comparisons_to_baselines/baseline_serial_ep1_new.mp4" type="video/mp4">
               </video>
               <figcaption>SinglePnP + a naive serial planner that commands each robot to pick and place sequentially. This baseline achieves a high success rate but is 3.5&times; slower than ours.</figcaption>
             </figure>
@@ -281,7 +283,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/comparisons_to_baselines/baseline_parallel_ep1.mp4" type="video/mp4">
+                <source src="./static/videos/comparisons_to_baselines/baseline_parallel_ep1_new.mp4" type="video/mp4">
               </video>
               <figcaption>SinglePnP + a naive parallel planner that commands all robots to pick and place simultaneously. This approach reduces execution time compared to the serial counterpart, but at the expense of a lower success rate and more blocked motions &mdash; motion commands from the planner that would cause a collision if executed, and are rejected instead.</figcaption>
             </figure>
@@ -289,7 +291,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/comparisons_to_baselines/reach_switch_ep1.mp4" type="video/mp4">
+                <source src="./static/videos/comparisons_to_baselines/reach_switch_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>Reaching policy (the pick-only policy we train first as a prior for MultiPnP) with its target switched to the bin after each pick, and no place-phase training. The arms grasp objects but were never trained to carry them, so they hold on to objects without delivering and no scene is completed.</figcaption>
             </figure>
@@ -311,7 +313,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/ablation_study/abl_noprior_ep1.mp4" type="video/mp4">
+                <source src="./static/videos/ablation_study/abl_noprior_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>w/o two-stage HER</figcaption>
             </figure>
@@ -319,15 +321,26 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/ablation_study/abl_carrysignal_ep1.mp4" type="video/mp4">
+                <source src="./static/videos/ablation_study/abl_carrysignal_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>w/o place-phase carry signal</figcaption>
             </figure>
           </div>
           <div class="column is-half">
-            <div class="placeholder-figure">
-              [Video placeholder: w/o docking mechanism]
-            </div>
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/ablation_study/standoff_target_ep1_new.mp4" type="video/mp4">
+              </video>
+              <figcaption>w/o docking mechanism: refused approaches and horizon expiration</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <video autoplay muted loop playsinline>
+                <source src="./static/videos/ablation_study/standoff_relaxed_ep2_new.mp4" type="video/mp4">
+              </video>
+              <figcaption>w/o docking mechanism: nominally reachable poses are not dockable</figcaption>
+            </figure>
           </div>
         </div>
         <!--/ Ablation study. -->
@@ -345,7 +358,7 @@
           <div class="column is-one-third">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/main_4r8t_ep0.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/main_4r8t_ep0_new.mp4" type="video/mp4">
               </video>
               <figcaption>Scene 1</figcaption>
             </figure>
@@ -353,7 +366,7 @@
           <div class="column is-one-third">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/main_4r8t_ep1.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/main_4r8t_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>Scene 2</figcaption>
             </figure>
@@ -361,7 +374,7 @@
           <div class="column is-one-third">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/main_4r8t_ep2.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/main_4r8t_ep3_new.mp4" type="video/mp4">
               </video>
               <figcaption>Scene 3</figcaption>
             </figure>
@@ -377,7 +390,7 @@
           <div class="column is-one-third">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/arms_2r_ep3.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/arms_2r_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>2 robots</figcaption>
             </figure>
@@ -385,7 +398,7 @@
           <div class="column is-one-third">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/arms_3r_ep3.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/arms_3r_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>3 robots</figcaption>
             </figure>
@@ -393,7 +406,7 @@
           <div class="column is-one-third">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/main_4r8t_ep0.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/main_4r8t_ep1_new.mp4" type="video/mp4">
               </video>
               <figcaption>4 robots</figcaption>
             </figure>
@@ -409,7 +422,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/scale_12t_ep1.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/scale_12t_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>12 objects</figcaption>
             </figure>
@@ -417,7 +430,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/scale_16t_ep0.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/scale_16t_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>16 objects</figcaption>
             </figure>
@@ -425,7 +438,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/scale_24t_ep0.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/scale_24t_ep1_new.mp4" type="video/mp4">
               </video>
               <figcaption>24 objects</figcaption>
             </figure>
@@ -433,7 +446,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/scale_32t_ep1.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/scale_32t_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>32 objects</figcaption>
             </figure>
@@ -451,7 +464,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/sorting_ep0.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/sorting_ep0_new.mp4" type="video/mp4">
               </video>
               <figcaption>Sorting, scene 1</figcaption>
             </figure>
@@ -459,7 +472,7 @@
           <div class="column is-half">
             <figure class="paper-figure">
               <video autoplay muted loop playsinline>
-                <source src="./static/videos/flexibility/sorting_ep2.mp4" type="video/mp4">
+                <source src="./static/videos/flexibility/sorting_ep2_new.mp4" type="video/mp4">
               </video>
               <figcaption>Sorting, scene 2</figcaption>
             </figure>
@@ -491,14 +504,20 @@
         </div>
         <div class="columns is-centered">
           <div class="column is-half">
-            <div class="placeholder-figure">
-              [Video placeholder: (a) simulation rollout]
-            </div>
+            <figure class="paper-figure">
+              <video muted loop playsinline controls preload="metadata">
+                <source src="./static/videos/real_world_experiments/simulation_rollout.mp4" type="video/mp4">
+              </video>
+              <figcaption>(a) MuJoCo simulation (3&times; speed)</figcaption>
+            </figure>
           </div>
           <div class="column is-half">
-            <div class="placeholder-figure">
-              [Video placeholder: (b) real-world rollout]
-            </div>
+            <figure class="paper-figure">
+              <video muted loop playsinline controls preload="metadata">
+                <source src="./static/videos/real_world_experiments/realworld_rollout.mp4" type="video/mp4">
+              </video>
+              <figcaption>(b) real-world robot cell (3&times; speed)</figcaption>
+            </figure>
           </div>
         </div>
         <div class="content has-text-centered">
@@ -508,7 +527,7 @@
         </div>
         <div class="columns is-centered">
           <div class="column is-one-third">
-            <figure class="paper-figure">
+            <figure class="paper-figure paper-figure--tall">
               <video muted loop playsinline controls preload="metadata">
                 <source src="./static/videos/real_world_experiments/Demo1_full_7obj_pnp_no_audio_edit.mp4" type="video/mp4">
               </video>
@@ -516,7 +535,7 @@
             </figure>
           </div>
           <div class="column is-one-third">
-            <figure class="paper-figure">
+            <figure class="paper-figure paper-figure--tall">
               <video muted loop playsinline controls preload="metadata">
                 <source src="./static/videos/real_world_experiments/Demo3_main_vid._editmp4.mp4" type="video/mp4">
               </video>
@@ -524,9 +543,12 @@
             </figure>
           </div>
           <div class="column is-one-third">
-            <div class="placeholder-figure">
-              [Video placeholder: trial 3]
-            </div>
+            <figure class="paper-figure paper-figure--tall">
+              <video muted loop playsinline controls preload="metadata">
+                <source src="./static/videos/real_world_experiments/Demo4_2_3_noface.mp4" type="video/mp4">
+              </video>
+              <figcaption>Trial 3</figcaption>
+            </figure>
           </div>
         </div>
       </div>
